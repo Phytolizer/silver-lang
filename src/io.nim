@@ -1,0 +1,1 @@
+proc printf*(fmt: cstring) {.importc, varargs.}
