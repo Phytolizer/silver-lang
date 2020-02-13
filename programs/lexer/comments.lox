@@ -1,0 +1,12 @@
+[][][]
+
+[] // trailing comment
+// entire line comment
+[]
+[]/*
+
+  multi-line
+  block
+  comment
+
+*/[]

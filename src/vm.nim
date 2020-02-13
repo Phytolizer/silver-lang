@@ -1,6 +1,7 @@
 import io
 import chunktypes
 import common
+import compiler
 import debug
 import ptr_arithmetic
 import value
@@ -92,4 +93,5 @@ proc run*(vm: var VM): InterpretResult =
                 discard
 
 proc interpret*(vm: var VM, source: ptr char): InterpretResult =
-    discard
+    compile(source)
+    return irOk

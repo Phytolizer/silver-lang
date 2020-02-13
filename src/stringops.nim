@@ -1,0 +1,1 @@
+proc strncmp*(s1: ptr char, s2: cstring, n: csize): cint {.nodecl, importc.}
