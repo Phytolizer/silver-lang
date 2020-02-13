@@ -9,6 +9,7 @@ when isMainModule:
     var c = initChunk()
 
     c.writeConstant(1.2, 123)
+    c.write(opNegate.uint8, 123)
 
     c.write(opReturn.uint8, 1000)
     c.disassemble("test chunk")

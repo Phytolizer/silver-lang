@@ -67,6 +67,8 @@ proc run*(vm: var VM): InterpretResult =
             of opConstantLong.uint8:
                 let constant = vm.readConstantLong()
                 vm.push(constant)
+            of opNegate.uint8:
+                vm.push(-vm.pop())
             of opReturn.uint8:
                 vm.pop().print()
                 printf("\n")

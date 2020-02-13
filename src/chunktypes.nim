@@ -5,6 +5,7 @@ type
     OpCode* = enum
         opConstant,
         opConstantLong,
+        opNegate,
         opReturn
 
     Chunk* = object

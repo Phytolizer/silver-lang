@@ -30,6 +30,8 @@ proc disassembleInstruction*(self: Chunk, offset: int): int =
             return constantInstruction(opConstant, self, offset)
         of opConstantLong.uint8:
             return constantInstruction(opConstantLong, self, offset)
+        of opNegate.uint8:
+            return simpleInstruction("opNegate", offset)
         of opReturn.uint8:
             return simpleInstruction("opReturn", offset)
         else:
