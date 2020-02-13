@@ -31,7 +31,8 @@ func initVM*: VM =
     result.resetStack()
 
 proc free*(vm: var VM) =
-    dealloc(vm.chunk)
+    if vm.chunk != nil:
+        dealloc(vm.chunk)
 
 func readByte(vm: var VM): uint8 =
     result = vm.ip[]
@@ -90,7 +91,5 @@ proc run*(vm: var VM): InterpretResult =
             else:
                 discard
 
-proc interpret*(vm: var VM, chunk: ptr Chunk): InterpretResult =
-    vm.chunk = chunk
-    vm.ip = vm.chunk.code
-    return vm.run()
+proc interpret*(vm: var VM, source: ptr char): InterpretResult =
+    discard
