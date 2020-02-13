@@ -21,6 +21,9 @@ func contains*(self: LineInfo, offset: int): bool =
 func initLines*: Lines =
     Lines(lines: nil, count: 0, capacity: 0)
 
+proc free*(self: var Lines) =
+    memory.freeArray(self.lines, self.capacity)
+
 proc push*(self: var Lines, info: LineInfo) =
     if self.count >= self.capacity:
         let oldCapacity = self.capacity

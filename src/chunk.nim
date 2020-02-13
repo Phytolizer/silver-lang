@@ -53,4 +53,5 @@ func getLine*(self: Chunk, offset: int): int =
 proc free*(self: var Chunk) =
     memory.freeArray(self.code, self.capacity)
     self.constants.free()
+    self.lines.free()
     self = initChunk()
