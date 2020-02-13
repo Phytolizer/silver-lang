@@ -6,6 +6,10 @@ type
         opConstant,
         opConstantLong,
         opNegate,
+        opAdd,
+        opSubtract,
+        opMultiply,
+        opDivide,
         opReturn
 
     Chunk* = object

@@ -47,6 +47,12 @@ func readConstantLong(vm: var VM): Value =
     let constant = (hi.uint shl 8) + (mid.uint shl 4) + lo.uint
     return (vm.chunk.constants.values + constant)[]
 
+template binaryOp(vm: var VM, op: untyped) =
+    block:
+        let b = vm.pop()
+        let a = vm.pop()
+        vm.push(op(a, b))
+
 proc run*(vm: var VM): InterpretResult =
     while true:
         if DEBUG_TRACE_EXECUTION:
@@ -67,6 +73,14 @@ proc run*(vm: var VM): InterpretResult =
             of opConstantLong.uint8:
                 let constant = vm.readConstantLong()
                 vm.push(constant)
+            of opAdd.uint8:
+                vm.binaryOp(`+`)
+            of opSubtract.uint8:
+                vm.binaryOp(`-`)
+            of opMultiply.uint8:
+                vm.binaryOp(`*`)
+            of opDivide.uint8:
+                vm.binaryOp(`/`)
             of opNegate.uint8:
                 vm.push(-vm.pop())
             of opReturn.uint8:
