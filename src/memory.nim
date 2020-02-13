@@ -6,7 +6,8 @@ func growCapacity*(capacity: int): int =
 
 proc reallocate(arr: pointer, oldSize: int, newSize: int): pointer =
     if newSize == 0:
-        dealloc(arr)
+        if arr != nil:
+            dealloc(arr)
         return nil
     realloc(arr, newSize)
 
