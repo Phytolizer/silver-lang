@@ -3,11 +3,13 @@ import chunktypes
 import chunk
 import common
 import compiler
-import debug
 import ptr_arithmetic
 import value
 import valuetypes
 import vmtypes
+
+when DEBUG_TRACE_EXECUTION:
+    import debug
 
 from memory import nil
 
@@ -60,7 +62,7 @@ template binaryOp(vm: var VM, op: untyped) =
 
 proc run*(vm: var VM): InterpretResult =
     while true:
-        if DEBUG_TRACE_EXECUTION:
+        when DEBUG_TRACE_EXECUTION:
             printf("          ", vm.stack, vm.stackTop)
             var slot = vm.stack
             while slot < vm.stackTop:

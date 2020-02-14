@@ -1,11 +1,15 @@
 import chunktypes
 import chunk
+import common
 import parsertypes
 import parser
 import scanner
 import scannertypes
 import stringops
 import valuetypes
+
+when DEBUG_PRINT_CODE:
+    import debug
 
 proc binary*(self: var Parser, s: var Scanner)
 proc grouping*(self: var Parser, s: var Scanner)
@@ -139,6 +143,8 @@ proc emitConstant(self: var Parser, value: Value) =
 
 proc endCompile(self: var Parser) =
     self.emitReturn()
+    when DEBUG_PRINT_CODE:
+        currentChunk()[].disassemble("code")
 
 proc parsePrecedence*(self: var Parser, s: var Scanner, precedence: Precedence)
 
