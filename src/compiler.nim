@@ -50,7 +50,7 @@ var RULES = [
     # ->
     ParseRule(prefix: nil, infix: nil, precedence: prNone),
     # !
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: unary, infix: nil, precedence: prNone),
     # !=
     ParseRule(prefix: nil, infix: nil, precedence: prNone),
     # =
@@ -204,6 +204,8 @@ proc unary*(self: var Parser, s: var Scanner) =
     self.parsePrecedence(s, prUnary)
 
     case operatorKind:
+        of tkBang:
+            self.emitByte(opNot.uint8)
         of tkMinus:
             self.emitByte(opNegate.uint8)
         else: return

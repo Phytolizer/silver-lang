@@ -12,6 +12,7 @@ type
         opSubtract,
         opMultiply,
         opDivide,
+        opNot,
         opNegate,
         opReturn
 

@@ -111,6 +111,8 @@ proc run*(vm: var VM): InterpretResult =
                 vm.binaryOp(intVal, `*`)
             of opDivide.uint8:
                 vm.binaryOp(intVal, `div`)
+            of opNot.uint8:
+                vm.push(boolVal(vm.pop().isFalsey()))
             of opNegate.uint8:
                 if not vm.peek(0).isInt():
                     vm.runtimeError("Operand must be a number")

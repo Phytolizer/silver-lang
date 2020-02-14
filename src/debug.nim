@@ -44,6 +44,8 @@ proc disassembleInstruction*(self: Chunk, offset: int): int =
             return simpleInstruction("opMultiply", offset)
         of opDivide.uint8:
             return simpleInstruction("opDivide", offset)
+        of opNot.uint8:
+            return simpleInstruction("opNot", offset)
         of opNegate.uint8:
             return simpleInstruction("opNegate", offset)
         of opReturn.uint8:

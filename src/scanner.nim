@@ -84,7 +84,7 @@ func checkKeyword(lexeme: ptr char, length: int, stop: int): TokenKind =
         if strncmp(lexeme, "cl", 2) == 0:
             return checkKeyword(lexeme, length, 2, "ass", tkClass)
         if strncmp(lexeme, "fa", 2) == 0:
-            return checkKeyword(lexeme, length, 2, "lse", tkElse)
+            return checkKeyword(lexeme, length, 2, "lse", tkFalse)
         if strncmp(lexeme, "fn", 2) == 0:
             return checkKeyword(lexeme, length, 2, "", tkFn)
         if strncmp(lexeme, "fo", 2) == 0:

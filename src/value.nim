@@ -31,3 +31,6 @@ proc print*(self: Value) =
         printf("null")
     of vInt:
         printf("%d", self.integer)
+
+func isFalsey*(self: Value): bool =
+    self.isNull() or (self.isBool() and not self.asBool())
