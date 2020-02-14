@@ -36,6 +36,12 @@ proc disassembleInstruction*(self: Chunk, offset: int): int =
             return simpleInstruction("opTrue", offset)
         of opFalse.uint8:
             return simpleInstruction("opFalse", offset)
+        of opEqual.uint8:
+            return simpleInstruction("opEqual", offset)
+        of opGreater.uint8:
+            return simpleInstruction("opGreater", offset)
+        of opLess.uint8:
+            return simpleInstruction("opLess", offset)
         of opAdd.uint8:
             return simpleInstruction("opAdd", offset)
         of opSubtract.uint8:

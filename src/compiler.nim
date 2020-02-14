@@ -52,19 +52,19 @@ var RULES = [
     # !
     ParseRule(prefix: unary, infix: nil, precedence: prNone),
     # !=
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: nil, infix: binary, precedence: prEquality),
     # =
     ParseRule(prefix: nil, infix: nil, precedence: prNone),
     # ==
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: nil, infix: binary, precedence: prEquality),
     # >
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: nil, infix: binary, precedence: prComparison),
     # >=
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: nil, infix: binary, precedence: prComparison),
     # <
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: nil, infix: binary, precedence: prComparison),
     # <=
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: nil, infix: binary, precedence: prComparison),
     # and
     ParseRule(prefix: nil, infix: nil, precedence: prNone),
     # or
@@ -132,6 +132,10 @@ proc currentChunk(): ptr Chunk =
 proc emitByte*(self: var Parser, b: uint8) =
     currentChunk()[].write(b, self.previous.line)
 
+proc emitBytes(self: var Parser, bs: varargs[uint8]) =
+    for b in bs:
+        self.emitByte(b)
+
 proc emitReturn(self: var Parser) =
     self.emitByte(opReturn.uint8)
 
@@ -166,6 +170,18 @@ proc binary*(self: var Parser, s: var Scanner) =
     self.parsePrecedence(s, Precedence(rule.precedence.uint + 1))
 
     case operatorKind:
+        of tkBangEqual:
+            self.emitBytes(opEqual.uint8, opNot.uint8)
+        of tkEqualEqual:
+            self.emitByte(opEqual.uint8)
+        of tkGreater:
+            self.emitByte(opGreater.uint8)
+        of tkGreaterEqual:
+            self.emitBytes(opLess.uint8, opNot.uint8)
+        of tkLess:
+            self.emitByte(opLess.uint8)
+        of tkLessEqual:
+            self.emitBytes(opGreater.uint8, opNot.uint8)
         of tkPlus:
             self.emitByte(opAdd.uint8)
         of tkMinus:

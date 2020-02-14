@@ -34,3 +34,14 @@ proc print*(self: Value) =
 
 func isFalsey*(self: Value): bool =
     self.isNull() or (self.isBool() and not self.asBool())
+
+func equals*(self: Value, other: Value): bool =
+    if self.kind != other.kind: return false
+
+    case self.kind:
+        of vBool:
+            return self.asBool() == other.asBool()
+        of vNull:
+            return true
+        of vInt:
+            return self.asInt() == other.asInt()

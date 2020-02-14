@@ -103,6 +103,14 @@ proc run*(vm: var VM): InterpretResult =
                 vm.push(boolVal(true))
             of opFalse.uint8:
                 vm.push(boolVal(false))
+            of opEqual.uint8:
+                let b = vm.pop()
+                let a = vm.pop()
+                vm.push(boolVal(a.equals(b)))
+            of opGreater.uint8:
+                vm.binaryOp(boolVal, `>`)
+            of opLess.uint8:
+                vm.binaryOp(boolVal, `<`)
             of opAdd.uint8:
                 vm.binaryOp(intVal, `+`)
             of opSubtract.uint8:
