@@ -17,6 +17,7 @@ type
         opDivide,
         opNot,
         opNegate,
+        opPrint,
         opReturn
 
     Chunk* = object

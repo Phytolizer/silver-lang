@@ -54,6 +54,8 @@ proc disassembleInstruction*(self: Chunk, offset: int): int =
             return simpleInstruction("opNot", offset)
         of opNegate.uint8:
             return simpleInstruction("opNegate", offset)
+        of opPrint.uint8:
+            return simpleInstruction("opPrint", offset)
         of opReturn.uint8:
             return simpleInstruction("opReturn", offset)
         else:

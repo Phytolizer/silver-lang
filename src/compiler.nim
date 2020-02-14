@@ -17,6 +17,9 @@ proc binary*(self: var Parser, s: var Scanner)
 proc literal*(self: var Parser, s: var Scanner)
 proc grouping*(self: var Parser, s: var Scanner)
 proc expression*(self: var Parser, s: var Scanner)
+proc printStatement(self: var Parser, s: var Scanner)
+proc declaration(self: var Parser, s: var Scanner)
+proc statement(self: var Parser, s: var Scanner)
 proc number*(self: var Parser, s: var Scanner)
 proc emitString*(self: var Parser, s: var Scanner)
 proc unary*(self: var Parser, s: var Scanner)
@@ -158,11 +161,14 @@ proc compile*(source: ptr char, c: ptr Chunk): bool =
     compilingChunk = c
     parser.advance(scanner)
     if parser.current.kind == tkEof:
+        # Empty file
         endCompile(parser)
         return true
-    parser.expression(scanner)
 
-    parser.consume(scanner, tkEof, "Expected end of expression")
+    # Start compilation
+    while not parser.match(scanner, tkEof):
+        parser.declaration(scanner)
+
     endCompile(parser)
     return not parser.hadError
 
@@ -212,6 +218,18 @@ proc grouping*(self: var Parser, s: var Scanner) =
 
 proc expression*(self: var Parser, s: var Scanner) =
     self.parsePrecedence(s, prAssignment)
+
+proc printStatement(self: var Parser, s: var Scanner) =
+    self.expression(s)
+    self.consume(s, tkSemicolon, "Expected ';' after value")
+    self.emitByte(opPrint.uint8)
+
+proc declaration(self: var Parser, s: var Scanner) =
+    self.statement(s)
+
+proc statement(self: var Parser, s: var Scanner) =
+    if self.match(s, tkPrint):
+        self.printStatement(s)
 
 proc number*(self: var Parser, s: var Scanner) =
     let value = strtol(self.previous.start, nil, 10)

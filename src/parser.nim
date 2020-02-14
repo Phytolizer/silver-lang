@@ -44,3 +44,11 @@ proc consume*(self: var Parser, s: var Scanner, kind: TokenKind,
         return
 
     self.errorAtCurrent(cast[ptr char](message))
+
+proc check(self: var Parser, kind: TokenKind): bool =
+    self.current.kind == kind
+
+proc match*(self: var Parser, s: var Scanner, kind: TokenKind): bool =
+    if not self.check(kind): return false
+    self.advance(s)
+    return true

@@ -161,9 +161,10 @@ proc run*(vm: var VM): InterpretResult =
                     vm.runtimeError("Operand must be a number")
                     return irRuntimeError
                 vm.push(intVal(vm.pop().asInt()))
-            of opReturn.uint8:
+            of opPrint.uint8:
                 vm.pop().print()
                 printf("\n")
+            of opReturn.uint8:
                 return irOk
             else:
                 discard
