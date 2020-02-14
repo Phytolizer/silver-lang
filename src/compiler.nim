@@ -9,7 +9,6 @@ import scanner
 import scannertypes
 import stringops
 import valuetypes
-import vmtypes
 
 when DEBUG_PRINT_CODE:
     import debug

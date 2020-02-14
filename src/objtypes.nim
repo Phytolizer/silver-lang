@@ -12,6 +12,7 @@ type
         obj*: Obj
         length*: int
         chars*: ptr char
+        hash*: uint32
 
 proc free*(self: var ptr Obj) =
     case self.kind:
