@@ -24,6 +24,9 @@ proc copyString*(chars: ptr char, length: int): ptr ObjString =
 
     return allocateString(heapChars, length)
 
+proc takeString*(chars: ptr char, length: int): ptr ObjString =
+    allocateString(chars, length)
+
 proc printObject*(self: Value) =
     case self.objKind():
         of objString:

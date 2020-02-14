@@ -4,7 +4,9 @@ import chunk
 import common
 import compiler
 import helpers
+import objects
 import ptr_arithmetic
+import stringops
 import value
 import valuetypes
 import vmtypes
@@ -26,7 +28,7 @@ template runtimeError(vm: var VM, fmt: cstring, args: varargs[untyped]) =
     fprintf(stderr, "[line %d] in script\n", line)
 
     vm.resetStack()
-    
+
 proc push(vm: var VM, value: Value) =
     if vm.count >= vm.capacity:
         let oldCapacity = vm.capacity
@@ -77,6 +79,19 @@ template binaryOp[T](vm: var VM, valueType: proc(x: T): Value, op: untyped) =
         let a = vm.pop().asInt()
         vm.push(valueType(op(a, b)))
 
+proc concatenate(vm: var VM) =
+    let b = vm.pop().asString()
+    let a = vm.pop().asString()
+
+    let length = a.length + b.length
+    let chars = memory.allocate(char, length + 1)
+    copyMem(chars, a.chars, a.length)
+    copyMem(chars + a.length, b.chars, b.length)
+    (chars + length)[] = '\0'
+
+    let res = takeString(chars, length)
+    vm.push(objVal(res))
+
 proc run*(vm: var VM): InterpretResult =
     while true:
         when DEBUG_TRACE_EXECUTION:
@@ -112,7 +127,15 @@ proc run*(vm: var VM): InterpretResult =
             of opLess.uint8:
                 vm.binaryOp(boolVal, `<`)
             of opAdd.uint8:
-                vm.binaryOp(intVal, `+`)
+                if vm.peek(0).isString() and vm.peek(1).isString():
+                    vm.concatenate()
+                elif vm.peek(0).isInt() and vm.peek(1).isInt():
+                    let b = vm.pop().asInt()
+                    let a = vm.pop().asInt()
+                    vm.push(intVal(a + b))
+                else:
+                    vm.runtimeError("Operands must be two numbers or two strings")
+                    return irRuntimeError
             of opSubtract.uint8:
                 vm.binaryOp(intVal, `-`)
             of opMultiply.uint8:
