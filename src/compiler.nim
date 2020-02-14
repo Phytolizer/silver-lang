@@ -12,6 +12,7 @@ when DEBUG_PRINT_CODE:
     import debug
 
 proc binary*(self: var Parser, s: var Scanner)
+proc literal*(self: var Parser, s: var Scanner)
 proc grouping*(self: var Parser, s: var Scanner)
 proc expression*(self: var Parser, s: var Scanner)
 proc number*(self: var Parser, s: var Scanner)
@@ -69,9 +70,9 @@ var RULES = [
     # or
     ParseRule(prefix: nil, infix: nil, precedence: prNone),
     # true
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: literal, infix: nil, precedence: prNone),
     # false
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: literal, infix: nil, precedence: prNone),
     # class
     ParseRule(prefix: nil, infix: nil, precedence: prNone),
     # super
@@ -87,7 +88,7 @@ var RULES = [
     # fn
     ParseRule(prefix: nil, infix: nil, precedence: prNone),
     # null
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: literal, infix: nil, precedence: prNone),
     # int
     ParseRule(prefix: nil, infix: nil, precedence: prNone),
     # char
@@ -175,6 +176,16 @@ proc binary*(self: var Parser, s: var Scanner) =
             self.emitByte(opDivide.uint8)
         else:
             return
+
+proc literal*(self: var Parser, s: var Scanner) =
+    case self.previous.kind:
+        of tkFalse:
+            self.emitByte(opFalse.uint8)
+        of tkNull:
+            self.emitByte(opNull.uint8)
+        of tkTrue:
+            self.emitByte(opTrue.uint8)
+        else: return
 
 proc grouping*(self: var Parser, s: var Scanner) =
     self.expression(s)

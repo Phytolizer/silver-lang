@@ -97,6 +97,12 @@ proc run*(vm: var VM): InterpretResult =
             of opConstantLong.uint8:
                 let constant = vm.readConstantLong()
                 vm.push(constant)
+            of opNull.uint8:
+                vm.push(nullVal())
+            of opTrue.uint8:
+                vm.push(boolVal(true))
+            of opFalse.uint8:
+                vm.push(boolVal(false))
             of opAdd.uint8:
                 vm.binaryOp(intVal, `+`)
             of opSubtract.uint8:

@@ -5,11 +5,14 @@ type
     OpCode* = enum
         opConstant,
         opConstantLong,
-        opNegate,
+        opNull,
+        opTrue,
+        opFalse,
         opAdd,
         opSubtract,
         opMultiply,
         opDivide,
+        opNegate,
         opReturn
 
     Chunk* = object
