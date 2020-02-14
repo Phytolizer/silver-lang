@@ -131,10 +131,6 @@ proc currentChunk(): ptr Chunk =
 proc emitByte*(self: var Parser, b: uint8) =
     currentChunk()[].write(b, self.previous.line)
 
-proc emitBytes(self: var Parser, bs: varargs[uint8]) =
-    for b in bs:
-        self.emitByte(b)
-
 proc emitReturn(self: var Parser) =
     self.emitByte(opReturn.uint8)
 
@@ -189,7 +185,7 @@ proc expression*(self: var Parser, s: var Scanner) =
 
 proc number*(self: var Parser, s: var Scanner) =
     let value = strtol(self.previous.start, nil, 10)
-    self.emitConstant(value)
+    self.emitConstant(intVal(value))
 
 proc unary*(self: var Parser, s: var Scanner) =
     let operatorKind = self.previous.kind

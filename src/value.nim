@@ -21,4 +21,13 @@ proc free*(self: var ValueArray) =
     self = initValueArray()
 
 proc print*(self: Value) =
-    printf("%d", self)
+    case self.kind:
+    of vBool:
+        if self.boolean:
+            printf("true")
+        else:
+            printf("false")
+    of vNull:
+        printf("null")
+    of vInt:
+        printf("%d", self.integer)

@@ -3,6 +3,7 @@ import chunktypes
 import chunk
 import common
 import compiler
+import helpers
 import ptr_arithmetic
 import value
 import valuetypes
@@ -15,6 +16,16 @@ from memory import nil
 
 func resetStack(vm: var VM) =
     vm.stackTop = vm.stack
+
+template runtimeError(vm: var VM, fmt: cstring, args: varargs[untyped]) =
+    appendToCall(fprintf(stderr, fmt), args)
+    fprintf(stderr, "\n\n")
+
+    let instruction = vm.ip - vm.chunk.code
+    let line = vm.chunk[].getLine(instruction)
+    fprintf(stderr, "[line %d] in script\n", line)
+
+    vm.resetStack()
     
 proc push(vm: var VM, value: Value) =
     if vm.count >= vm.capacity:
@@ -28,9 +39,12 @@ proc push(vm: var VM, value: Value) =
 
 proc pop(vm: var VM): Value =
     if vm.stackTop == vm.stack:
-        return 0
+        return nullVal()
     vm.stackTop -= 1
     return vm.stackTop[]
+
+func peek(vm: var VM, distance: int): Value =
+    (vm.stackTop - distance - 1)[]
 
 func initVM*: VM =
     result = VM()
@@ -54,11 +68,14 @@ func readConstantLong(vm: var VM): Value =
     let constant = (hi.uint shl 8) + (mid.uint shl 4) + lo.uint
     return (vm.chunk.constants.values + constant)[]
 
-template binaryOp(vm: var VM, op: untyped) =
+template binaryOp[T](vm: var VM, valueType: proc(x: T): Value, op: untyped) =
     block:
-        let b = vm.pop()
-        let a = vm.pop()
-        vm.push(op(a, b))
+        if not (vm.peek(0).isInt() and vm.peek(1).isInt()):
+            vm.runtimeError("Operands must be numbers")
+            return irRuntimeError
+        let b = vm.pop().asInt()
+        let a = vm.pop().asInt()
+        vm.push(valueType(op(a, b)))
 
 proc run*(vm: var VM): InterpretResult =
     while true:
@@ -81,15 +98,18 @@ proc run*(vm: var VM): InterpretResult =
                 let constant = vm.readConstantLong()
                 vm.push(constant)
             of opAdd.uint8:
-                vm.binaryOp(`+`)
+                vm.binaryOp(intVal, `+`)
             of opSubtract.uint8:
-                vm.binaryOp(`-`)
+                vm.binaryOp(intVal, `-`)
             of opMultiply.uint8:
-                vm.binaryOp(`*`)
+                vm.binaryOp(intVal, `*`)
             of opDivide.uint8:
-                vm.binaryOp(`div`)
+                vm.binaryOp(intVal, `div`)
             of opNegate.uint8:
-                vm.push(-vm.pop())
+                if not vm.peek(0).isInt():
+                    vm.runtimeError("Operand must be a number")
+                    return irRuntimeError
+                vm.push(intVal(vm.pop().asInt()))
             of opReturn.uint8:
                 vm.pop().print()
                 printf("\n")
