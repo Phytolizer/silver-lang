@@ -1,8 +1,10 @@
 import chunktypes
 import chunk
 import common
+import objects
 import parsertypes
 import parser
+import ptr_arithmetic
 import scanner
 import scannertypes
 import stringops
@@ -16,6 +18,7 @@ proc literal*(self: var Parser, s: var Scanner)
 proc grouping*(self: var Parser, s: var Scanner)
 proc expression*(self: var Parser, s: var Scanner)
 proc number*(self: var Parser, s: var Scanner)
+proc emitString*(self: var Parser, s: var Scanner)
 proc unary*(self: var Parser, s: var Scanner)
 
 var RULES = [
@@ -114,7 +117,7 @@ var RULES = [
     # identifier
     ParseRule(prefix: nil, infix: nil, precedence: prNone),
     # "string literal"
-    ParseRule(prefix: nil, infix: nil, precedence: prNone),
+    ParseRule(prefix: emitString, infix: nil, precedence: prNone),
     # 9999
     ParseRule(prefix: number, infix: nil, precedence: prNone),
     # eof
@@ -213,6 +216,10 @@ proc expression*(self: var Parser, s: var Scanner) =
 proc number*(self: var Parser, s: var Scanner) =
     let value = strtol(self.previous.start, nil, 10)
     self.emitConstant(intVal(value))
+
+proc emitString*(self: var Parser, s: var Scanner) =
+    self.emitConstant(objVal(copyString(self.previous.start + 1,
+            self.previous.length - 2)))
 
 proc unary*(self: var Parser, s: var Scanner) =
     let operatorKind = self.previous.kind

@@ -4,12 +4,15 @@ func growCapacity*(capacity: int): int =
     else:
         return capacity * 2
 
-proc reallocate(arr: pointer, oldSize: int, newSize: int): pointer =
+proc reallocate*(arr: pointer, oldSize: int, newSize: int): pointer =
     if newSize == 0:
         if arr != nil:
             dealloc(arr)
         return nil
     realloc(arr, newSize)
+
+proc allocate*(T: typedesc, count: SomeInteger): ptr T =
+    cast[ptr T](reallocate(nil, 0, sizeof(T) * count))
 
 proc growArray*[T](arr: ptr T, oldSize: int, newSize: int): ptr T =
     return cast[ptr T](reallocate(arr, sizeof(T) * oldSize, sizeof(T) * newSize))

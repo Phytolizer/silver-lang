@@ -1,4 +1,6 @@
 import io
+import objects
+import stringops
 import valuetypes
 import ptr_arithmetic
 
@@ -31,6 +33,8 @@ proc print*(self: Value) =
         printf("null")
     of vInt:
         printf("%d", self.integer)
+    of vObj:
+        self.printObject()
 
 func isFalsey*(self: Value): bool =
     self.isNull() or (self.isBool() and not self.asBool())
@@ -45,3 +49,8 @@ func equals*(self: Value, other: Value): bool =
             return true
         of vInt:
             return self.asInt() == other.asInt()
+        of vObj:
+            let selfStr = self.asString()
+            let otherStr = other.asString()
+            return selfStr.length == otherStr.length and memcmp(selfStr.chars,
+                    otherStr.chars, selfStr.length) == 0
