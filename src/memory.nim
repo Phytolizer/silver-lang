@@ -20,3 +20,6 @@ proc growArray*[T](arr: ptr T, oldSize: int, newSize: int): ptr T =
 proc freeArray*[T](arr: ptr T, capacity: int) =
     if capacity == 0: return
     discard reallocate(arr, sizeof(T) * capacity, 0)
+
+proc free*(T: typedesc, p: pointer) =
+    discard reallocate(p, sizeof(T), 0)

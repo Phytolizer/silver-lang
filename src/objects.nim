@@ -2,12 +2,14 @@ import io
 import objtypes
 import ptr_arithmetic
 import valuetypes
+import vmtypes
 
 from memory import nil
 
 proc allocateObject(size: int, kind: ObjKind): ptr Obj =
     result = cast[ptr Obj](memory.reallocate(nil, 0, size))
     result.kind = kind
+    result.next = vm.objects
 
 proc allocateObj(T: typedesc, kind: ObjKind): ptr T =
     cast[ptr T](allocateObject(sizeof(T), kind))

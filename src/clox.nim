@@ -46,7 +46,7 @@ proc runFile(vm: var VM, file: cstring): int =
         return 70
 
 when isMainModule:
-    var vm = initVM()
+    initVM()
     var ret = 0
 
     if cmdCount == 1:

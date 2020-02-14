@@ -5,8 +5,8 @@ import common
 import compiler
 import helpers
 import objects
+import objtypes
 import ptr_arithmetic
-import stringops
 import value
 import valuetypes
 import vmtypes
@@ -48,13 +48,22 @@ proc pop(vm: var VM): Value =
 func peek(vm: var VM, distance: int): Value =
     (vm.stackTop - distance - 1)[]
 
-func initVM*: VM =
-    result = VM()
-    result.resetStack()
+proc initVM* =
+    vmtypes.vm = VM()
+    vmtypes.vm.resetStack()
+    vmtypes.vm.objects = nil
+
+proc freeObjects*(vm: var VM) =
+    var obj = vm.objects
+    while obj != nil:
+        let next = obj.next
+        obj.free()
+        obj = next
 
 proc free*(vm: var VM) =
     if vm.chunk != nil:
         vm.chunk[].free()
+    vm.freeObjects()
 
 func readByte(vm: var VM): uint8 =
     result = vm.ip[]
