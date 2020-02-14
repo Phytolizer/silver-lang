@@ -15,4 +15,5 @@ proc growArray*[T](arr: ptr T, oldSize: int, newSize: int): ptr T =
     return cast[ptr T](reallocate(arr, sizeof(T) * oldSize, sizeof(T) * newSize))
 
 proc freeArray*[T](arr: ptr T, capacity: int) =
+    if capacity == 0: return
     discard reallocate(arr, sizeof(T) * capacity, 0)

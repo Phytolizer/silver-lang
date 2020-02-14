@@ -21,4 +21,4 @@ proc free*(self: var ValueArray) =
     self = initValueArray()
 
 proc print*(self: Value) =
-    printf("%g", self)
+    printf("%d", self)

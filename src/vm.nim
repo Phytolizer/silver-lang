@@ -1,5 +1,6 @@
 import io
 import chunktypes
+import chunk
 import common
 import compiler
 import debug
@@ -24,6 +25,8 @@ proc push(vm: var VM, value: Value) =
     vm.stackTop += 1
 
 proc pop(vm: var VM): Value =
+    if vm.stackTop == vm.stack:
+        return 0
     vm.stackTop -= 1
     return vm.stackTop[]
 
@@ -33,7 +36,7 @@ func initVM*: VM =
 
 proc free*(vm: var VM) =
     if vm.chunk != nil:
-        dealloc(vm.chunk)
+        vm.chunk[].free()
 
 func readByte(vm: var VM): uint8 =
     result = vm.ip[]
@@ -82,7 +85,7 @@ proc run*(vm: var VM): InterpretResult =
             of opMultiply.uint8:
                 vm.binaryOp(`*`)
             of opDivide.uint8:
-                vm.binaryOp(`/`)
+                vm.binaryOp(`div`)
             of opNegate.uint8:
                 vm.push(-vm.pop())
             of opReturn.uint8:
@@ -93,5 +96,16 @@ proc run*(vm: var VM): InterpretResult =
                 discard
 
 proc interpret*(vm: var VM, source: ptr char): InterpretResult =
-    compile(source)
-    return irOk
+    var c = initChunk()
+
+    if not compile(source, addr c):
+        c.free()
+        return irCompileError
+
+    vm.chunk = addr c
+    vm.ip = c.code
+
+    result = vm.run()
+    c.free()
+    vm.chunk = nil
+    vm.ip = nil

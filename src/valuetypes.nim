@@ -1,5 +1,5 @@
 type
-    Value* = float64
+    Value* = int64
 
     ValueArray* = object
         values*: ptr Value
