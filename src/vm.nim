@@ -65,6 +65,7 @@ proc freeObjects*(vm: var VM) =
 proc free*(vm: var VM) =
     if vm.chunk != nil:
         vm.chunk[].free()
+    memory.freeArray(vm.stack, vm.capacity)
     vm.strings.free()
     vm.freeObjects()
 
