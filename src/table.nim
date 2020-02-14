@@ -1,6 +1,7 @@
 import objtypes
 import options
 import ptr_arithmetic
+import stringops
 import tabletypes
 import valuetypes
 
@@ -95,3 +96,18 @@ proc remove*(self: var Table, key: ptr ObjString): bool =
     entry.value = boolVal(true)
 
     return true
+
+proc findString*(self: Table, chars: ptr char, length: int, hash: uint32): ptr ObjString =
+    if self.count == 0: return nil
+
+    var index = hash mod self.capacity.uint32
+
+    while true:
+        let entry = self.entries + index
+
+        if entry.key == nil:
+            if entry.value.isNull(): return nil
+        elif entry.key.length == length and entry.key.hash == hash and memcmp(entry.key.chars, chars, length) == 0:
+            return entry.key
+        
+        index = (index + 1) mod self.capacity.uint32

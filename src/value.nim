@@ -1,6 +1,5 @@
 import io
 import objects
-import stringops
 import valuetypes
 import ptr_arithmetic
 
@@ -50,7 +49,4 @@ func equals*(self: Value, other: Value): bool =
         of vInt:
             return self.asInt() == other.asInt()
         of vObj:
-            let selfStr = self.asString()
-            let otherStr = other.asString()
-            return selfStr.length == otherStr.length and memcmp(selfStr.chars,
-                    otherStr.chars, selfStr.length) == 0
+            return self.asObj() == other.asObj()

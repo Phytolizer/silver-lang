@@ -3,6 +3,7 @@ import objtypes
 import ptr_arithmetic
 import valuetypes
 import vmtypes
+import table
 
 from memory import nil
 
@@ -21,6 +22,8 @@ proc allocateString*(chars: ptr char, length: int,
     result.chars = chars
     result.hash = hash
 
+    discard vm.strings.put(result, nullVal())
+
 func hashString(key: ptr char, length: int): uint32 =
     result = 2166136261'u32
 
@@ -30,6 +33,9 @@ func hashString(key: ptr char, length: int): uint32 =
 
 proc copyString*(chars: ptr char, length: int): ptr ObjString =
     let hash = hashString(chars, length)
+    # Strings are interned
+    let interned = vm.strings.findString(chars, length, hash)
+    if interned != nil: return interned
 
     let heapChars = memory.allocate(char, length + 1)
     copyMem(heapChars, chars, length)
@@ -39,6 +45,10 @@ proc copyString*(chars: ptr char, length: int): ptr ObjString =
 
 proc takeString*(chars: ptr char, length: int): ptr ObjString =
     let hash = hashString(chars, length)
+    let interned = vm.strings.findString(chars, length, hash)
+    if interned != nil:
+        memory.freeArray(chars, length + 1)
+        return interned
     allocateString(chars, length, hash)
 
 proc printObject*(self: Value) =

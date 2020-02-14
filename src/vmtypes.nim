@@ -1,5 +1,6 @@
 import chunktypes
 import objtypes
+import tabletypes
 import valuetypes
 
 const STACK_MAX* = 256
@@ -12,6 +13,8 @@ type
         stackTop*: ptr Value
         count*: int
         capacity*: int
+        strings*: Table
+
         objects*: ptr Obj
     
     InterpretResult* = enum

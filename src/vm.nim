@@ -7,6 +7,7 @@ import helpers
 import objects
 import objtypes
 import ptr_arithmetic
+import table
 import value
 import valuetypes
 import vmtypes
@@ -52,6 +53,7 @@ proc initVM* =
     vmtypes.vm = VM()
     vmtypes.vm.resetStack()
     vmtypes.vm.objects = nil
+    vmtypes.vm.strings = initTable()
 
 proc freeObjects*(vm: var VM) =
     var obj = vm.objects
@@ -63,6 +65,7 @@ proc freeObjects*(vm: var VM) =
 proc free*(vm: var VM) =
     if vm.chunk != nil:
         vm.chunk[].free()
+    vm.strings.free()
     vm.freeObjects()
 
 func readByte(vm: var VM): uint8 =
